@@ -7,8 +7,8 @@ import (
 
 type Curve struct {
 	P, A, B *big.Int // Elliptic curve definition: (y^2) % p = (x^3 + ax + b) % p
-	G Point          // Generator point (a point on the curve above)
-	N *big.Int       // Number of possible points on the curve
+	G       Point    // Generator point (a point on the curve above)
+	N       *big.Int // Number of possible points on the curve
 }
 
 func newBigInt(s string) *big.Int {

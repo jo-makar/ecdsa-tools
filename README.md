@@ -27,37 +27,19 @@ Ie pubkey = privkey * G
 
 ## Documentation
 
-<!-- FIXME Write a git hook to populate with `go doc -all` -->
-
+<!-- go doc start -->
 ```
 package ecdsa_tools // import "github.com/jo-makar/ecdsa-tools"
 
-
-TYPES
-
-type Curve struct {
-	P, A, B *big.Int // Elliptic curve definition: (y^2) % p = (x^3 + ax + b) % p
-	G       Point    // Generator point (a point on the curve above)
-	N       *big.Int // Number of possible points on the curve
-}
-
-type Point struct {
-	X, Y *big.Int
-}
-
-type PrivKey struct {
-	Curve *Curve
-	D     *big.Int // Private key
-}
-
-func NewPrivKeyBitcoin() (*PrivKey, error)
-
-func NewPrivKeyEthereum() (*PrivKey, error)
-
-func NewPrivKeyOpenSSL(curve string) (*PrivKey, error)
-
-func NewPrivKeyStdLib(curve string) (*PrivKey, error)
+type Curve struct{ ... }
+type Point struct{ ... }
+type PrivKey struct{ ... }
+    func NewPrivKeyBitcoin() (*PrivKey, error)
+    func NewPrivKeyEthereum() (*PrivKey, error)
+    func NewPrivKeyOpenSSL(curve string) (*PrivKey, error)
+    func NewPrivKeyStdLib(curve string) (*PrivKey, error)
 ```
+<!-- go doc end -->
 
 ## cmd/demo/
 
