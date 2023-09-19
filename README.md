@@ -32,6 +32,12 @@ Negated points have the same x coordinate and negated y coordinate
 Adding (the x, y components of) one point P to another point Q results in a point S  
 If a line is drawn from P to Q it will result in a point R where R = -S
 
+P + Q = R  
+(xp, yp) + (xq, yq) = (xr, yr)  
+lambda = (yq - yp) / (xq - xp)  
+xr = lambda^2 - xp - xq  
+yr = lambda(xp - xr) - yp
+
 #### Point multiplication
 
 If P is added to P the result is 2P, similarly 2P + P is 3P
@@ -49,10 +55,6 @@ Ie pubkey = privkey * G
 package ecdsa_tools // import "github.com/jo-makar/ecdsa-tools"
 
 
-FUNCTIONS
-
-func OnCurve(p *Point, c *Curve) bool
-
 TYPES
 
 type Curve struct {
@@ -64,17 +66,20 @@ type Curve struct {
 type Point struct {
 	X, Y  *big.Int
 	AtInf bool
+	Curve *Curve
 }
 
 func NewPoint(x, y *big.Int, curve *Curve) (*Point, error)
 
 func (p *Point) Add(q *Point) *Point
 
-func (p *Point) Equal(q *Point) bool
+func (p *Point) Equals(q *Point) bool
 
 func (p *Point) IsNegation(q *Point) bool
 
 func (p *Point) Negate() *Point
+
+func (p *Point) OnCurve() bool
 
 type PrivKey struct {
 	Curve *Curve
