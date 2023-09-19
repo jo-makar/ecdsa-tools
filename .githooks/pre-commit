@@ -5,7 +5,7 @@ set -o errexit
 awk '
   BEGIN { state = 0 }
   state == 0 && /^<!-- go doc start -->$/ { state = 1; print }
-  state == 1 && /^<!-- go doc end -->$/   { state = 0; print "```"; system("go doc"); print "```" }
+  state == 1 && /^<!-- go doc end -->$/   { state = 0; print "```"; system("go doc -all"); print "```" }
   state == 0 { print }
 ' README.md >README.md.githook
 

@@ -48,15 +48,47 @@ Ie pubkey = privkey * G
 ```
 package ecdsa_tools // import "github.com/jo-makar/ecdsa-tools"
 
+
+FUNCTIONS
+
 func OnCurve(p *Point, c *Curve) bool
-type Curve struct{ ... }
-type Point struct{ ... }
-    func NewPoint(x, y *big.Int, curve *Curve) (*Point, error)
-type PrivKey struct{ ... }
-    func NewPrivKeyBitcoin() (*PrivKey, error)
-    func NewPrivKeyEthereum() (*PrivKey, error)
-    func NewPrivKeyOpenSSL(curve string) (*PrivKey, error)
-    func NewPrivKeyStdLib(curve string) (*PrivKey, error)
+
+TYPES
+
+type Curve struct {
+	P, A, B *big.Int // Elliptic curve definition: (y^2) % p = (x^3 + ax + b) % p
+	G       Point    // Generator point (a point on the curve above)
+	N       *big.Int // Number of possible points on the curve
+}
+
+type Point struct {
+	X, Y  *big.Int
+	AtInf bool
+}
+
+func NewPoint(x, y *big.Int, curve *Curve) (*Point, error)
+
+func (p *Point) Add(q *Point) *Point
+
+func (p *Point) Equal(q *Point) bool
+
+func (p *Point) IsNegation(q *Point) bool
+
+func (p *Point) Negate() *Point
+
+type PrivKey struct {
+	Curve *Curve
+	D     *big.Int // Private key
+}
+
+func NewPrivKeyBitcoin() (*PrivKey, error)
+
+func NewPrivKeyEthereum() (*PrivKey, error)
+
+func NewPrivKeyOpenSSL(curve string) (*PrivKey, error)
+
+func NewPrivKeyStdLib(curve string) (*PrivKey, error)
+
 ```
 <!-- go doc end -->
 
