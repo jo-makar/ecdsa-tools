@@ -30,17 +30,7 @@ func TestCurves(t *testing.T) {
 		}
 
 		// Verify G is a point on the curve
-
-		lhs := new(big.Int)
-		lhs.Exp(curve.G.Y, big.NewInt(2), curve.P)
-
-		rhs := new(big.Int)
-		rhs.Exp(curve.G.X, big.NewInt(3), curve.P)
-		rhs.Add(rhs, big.NewInt(0).Mul(curve.A, curve.G.X))
-		rhs.Add(rhs, curve.B)
-		rhs.Mod(rhs, curve.P)
-
-		if lhs.Cmp(rhs) != 0 {
+		if !OnCurve(&curve.G, curve) {
 			t.Errorf("%s: G not on curve", name)
 		}
 	}

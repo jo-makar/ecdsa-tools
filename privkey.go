@@ -83,8 +83,8 @@ func NewPrivKeyOpenSSL(curve string) (*PrivKey, error) {
 		return nil, errors.New("invalid hex value")
 	}
 
-	// FIXME STOPPED Get curve parameters & verify internal consistency (see the README.md)
-	// FIXME For checking curve parameters use tests (ie n < p, g is a valid point of the curve, etc)
+	// Verify pubkey = privkey * G
+	// FIXME STOPPED
 	fmt.Printf("0x%s\n", d.Text(16))
 	fmt.Printf("0x%s\n", pubkey.Text(16))
 
