@@ -33,10 +33,15 @@ Adding (the x, y components of) one point P to another point Q results in a poin
 If a line is drawn from P to Q it will result in a point R where R = -S
 
 P + Q = R  
-(xp, yp) + (xq, yq) = (xr, yr)  
-lambda = (yq - yp) / (xq - xp)  
-xr = lambda^2 - xp - xq  
-yr = lambda(xp - xr) - yp
+(xp, yp) + (xq, yq) = (xr, yr)
+
+lambda = ((yq - yp) / (xq - xp)) % p  
+"Division" is via modular inverse  
+Modular inverse: Find b such that (a * b) % m = 1  
+lambda = ((yq - yp) * modinv(xq - xp, p)) % p
+
+xr = (lambda^2 - xp - xq) % p  
+yr = (lambda * (xp - xr) - yp) % p
 
 #### Point multiplication
 

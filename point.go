@@ -73,10 +73,14 @@ func (p *Point) Add(q *Point) *Point {
 	if p.AtInf && q.AtInf {
 		return &Point{AtInf: true, Curve: p.Curve}
 	} else if p.AtInf && !q.AtInf {
-		return &Point{AtInf: true, Curve: p.Curve}
+		return &Point{X: new(big.Int).Set(q.X), Y: new(big.Int).Set(q.Y), Curve: p.Curve}
 	} else if !p.AtInf && q.AtInf {
-		return &Point{AtInf: true, Curve: p.Curve}
+		return &Point{X: new(big.Int).Set(p.X), Y: new(big.Int).Set(p.Y), Curve: p.Curve}
 	}
+
+	// FIXME Call Double
+	//if p.Equals(q) {
+	//}
 
 	if p.IsNegation(q) {
 		return &Point{AtInf: true, Curve: p.Curve}
@@ -87,7 +91,7 @@ func (p *Point) Add(q *Point) *Point {
 		panic(errors.New("points with same x but not negations"))
 	}
 
-	// FIXME STOPPED Write explicit steps in the README.md
+	// FIXME STOPPED Write explicit steps in the README.md (involves modinv)
 	//               Verify new point OnCurve
 	//               Also write some tests around this
 	return &Point{Curve: p.Curve}
