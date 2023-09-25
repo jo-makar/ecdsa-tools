@@ -3,6 +3,7 @@ package ecdsa_tools
 import (
 	"errors"
 	"math/big"
+	"slices"
 )
 
 type Point struct {
@@ -98,9 +99,9 @@ func (p *Point) Add(q *Point) *Point {
 		return &Point{X: new(big.Int).Set(p.X), Y: new(big.Int).Set(p.Y), Curve: p.Curve}
 	}
 
-	// FIXME STOPPED Call Double, add test for this
-	//if p.Equals(q) {
-	//}
+	if p.Equals(q) {
+		return p.Double()
+	}
 
 	if p.IsNegation(q) {
 		return &Point{AtInf: true, Curve: p.Curve}
@@ -177,4 +178,68 @@ func (p *Point) Double() *Point {
 	return q
 }
 
-// FIXME Implement Mul
+func (p *Point) Multiply(k *big.Int) *Point {
+	if k.Cmp(big.NewInt(0)) != 1 {
+		panic(errors.New("multiply by k<1"))
+	}
+	// TODO What is multiplication by zero, the point at infinity?
+	//      What is multiplcation by a negative number, multipled negation if k is odd?
+
+	if p.AtInf {
+		return &Point{AtInf: true, Curve: p.Curve}
+	}
+
+	cache := map[string]*Point{
+		big.NewInt(1).String(): &Point{
+			X:     new(big.Int).Set(p.X),
+			Y:     new(big.Int).Set(p.Y),
+			Curve: p.Curve,
+		},
+	}
+	keys := []*big.Int{big.NewInt(1)}
+
+	// Build the cache of (point) factors
+	{
+		i := big.NewInt(1)
+		q := cache[i.String()]
+		for {
+			i.Mul(i, big.NewInt(2))
+			if i.Cmp(k) == 1 { // i > k
+				break
+			}
+
+			q = q.Double()
+			cache[i.String()] = q
+			keys = append(keys, new(big.Int).Set(i))
+		}
+
+		slices.Reverse(keys)
+	}
+
+	// Factor k using the cache
+	i := big.NewInt(1)
+	q := cache[i.String()]
+	for {
+		for _, j := range keys {
+			if new(big.Int).Add(i, j).Cmp(k) == 1 {
+				continue
+			}
+
+			q = q.Add(cache[j.String()])
+			i.Add(i, j)
+
+			// Break here to check for largest factor each iteration
+			break
+		}
+
+		if i.Cmp(k) == 0 {
+			break
+		}
+	}
+
+	if !q.OnCurve() {
+		panic(errors.New("multiplied point not on curve"))
+	}
+
+	return q
+}

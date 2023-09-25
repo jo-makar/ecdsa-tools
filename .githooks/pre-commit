@@ -14,7 +14,7 @@ diff -q README.md README.md.githook >/dev/null \
     || { echo updating api docs in README.md; mv -f README.md.githook README.md; git add README.md; }
 
 gofmt_output=$(gofmt -l .)
-if ! test -z $gofmt_output; then
+if ! test -z "$gofmt_output"; then
     echo unformatted files: $gofmt_output
     echo 'run `go fmt <file>` to format'
     exit 1

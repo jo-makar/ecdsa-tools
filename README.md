@@ -93,6 +93,8 @@ func (p *Point) Equals(q *Point) bool
 
 func (p *Point) IsNegation(q *Point) bool
 
+func (p *Point) Multiply(k *big.Int) *Point
+
 func (p *Point) Negate() *Point
 
 func (p *Point) OnCurve() bool
