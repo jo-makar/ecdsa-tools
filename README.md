@@ -71,9 +71,11 @@ TYPES
 
 type Curve struct {
 	P, A, B *big.Int // Elliptic curve definition: (y^2) % p = (x^3 + ax + b) % p
-	G       Point    // Generator point (a point on the curve above)
+	Gx, Gy  *big.Int // Generator point (a point on the curve above)
 	N       *big.Int // Number of possible points on the curve
 }
+
+func (c *Curve) Equals(d *Curve) bool
 
 type Point struct {
 	X, Y  *big.Int
@@ -84,6 +86,8 @@ type Point struct {
 func NewPoint(x, y *big.Int, curve *Curve) (*Point, error)
 
 func (p *Point) Add(q *Point) *Point
+
+func (p *Point) Double() *Point
 
 func (p *Point) Equals(q *Point) bool
 

@@ -73,8 +73,8 @@ func (p *Point) Negate() *Point {
 	}
 
 	q := &Point{
-		X: new(big.Int).Set(p.X),
-		Y: new(big.Int).Neg(p.Y),
+		X:     new(big.Int).Set(p.X),
+		Y:     new(big.Int).Neg(p.Y),
 		Curve: p.Curve,
 	}
 
@@ -177,4 +177,4 @@ func (p *Point) Double() *Point {
 	return q
 }
 
-// FIXME Implement Mul/Multiply
+// FIXME Implement Mul
