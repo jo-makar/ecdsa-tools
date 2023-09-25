@@ -72,3 +72,30 @@ func TestAddNegation(t *testing.T) {
 		t.Errorf("unexpected result")
 	}
 }
+
+func TestDouble(t *testing.T) {
+	curve := &Curve{
+		P: big.NewInt(7),
+		A: big.NewInt(3),
+		B: big.NewInt(4),
+	}
+
+	p := &Point{
+		X:     big.NewInt(2),
+		Y:     big.NewInt(2),
+		Curve: curve,
+	}
+
+	if !p.OnCurve() {
+		t.Errorf("point not on curve")
+	}
+
+	q := p.Double()
+	if !q.OnCurve() {
+		t.Errorf("result not on curve")
+	}
+
+	if q.X.Cmp(big.NewInt(0)) != 0 || q.Y.Cmp(big.NewInt(2)) != 0 {
+		t.Errorf("unexpected result")
+	}
+}

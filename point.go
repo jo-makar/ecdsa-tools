@@ -137,4 +137,44 @@ func (p *Point) Add(q *Point) *Point {
 	return r
 }
 
-// FIXME Implement Double, Mul/Multiply
+func (p *Point) Double() *Point {
+	if p.AtInf {
+		return &Point{AtInf: true, Curve: p.Curve}
+	}
+
+	lambda := new(big.Int)
+	{
+		left := new(big.Int)
+		left.Exp(p.X, big.NewInt(2), p.Curve.P)
+		left.Mul(left, big.NewInt(3))
+		left.Add(left, p.Curve.A)
+
+		right := new(big.Int)
+		right.Mul(big.NewInt(2), p.Y)
+		right.ModInverse(right, p.Curve.P)
+
+		lambda.Mul(left, right)
+		lambda.Mod(lambda, p.Curve.P)
+	}
+
+	x := new(big.Int)
+	x.Exp(lambda, big.NewInt(2), p.Curve.P)
+	x.Sub(x, p.X)
+	x.Sub(x, p.X)
+	x.Mod(x, p.Curve.P)
+
+	y := new(big.Int)
+	y.Mul(lambda, new(big.Int).Sub(p.X, x))
+	y.Sub(y, p.Y)
+	y.Mod(y, p.Curve.P)
+
+	q := &Point{X: x, Y: y, Curve: p.Curve}
+
+	if !q.OnCurve() {
+		panic(errors.New("added point not on curve"))
+	}
+
+	return q
+}
+
+// FIXME Implement Mul/Multiply
