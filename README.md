@@ -43,6 +43,13 @@ lambda = ((yq - yp) * modinv(xq - xp, p)) % p
 xr = (lambda^2 - xp - xq) % p  
 yr = (lambda * (xp - xr) - yp) % p
 
+#### Point doubling
+
+As above but with
+
+lambda = ((3 * xp^2 + a) / (2 * yp)) % p  
+lambda = ((3 * xp^2 + a) * modinv(2 * yp, p)) % p
+
 #### Point multiplication
 
 If P is added to P the result is 2P, similarly 2P + P is 3P
