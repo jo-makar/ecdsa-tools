@@ -30,8 +30,9 @@ func TestCurves(t *testing.T) {
 		}
 
 		// Verify G is a point on the curve
-		if !curve.G.OnCurve() {
-			t.Errorf("%s: G not on curve", name)
+		g := &Point{X: curve.Gx, Y: curve.Gy, Curve: curve}
+		if !g.OnCurve() {
+			t.Errorf("%s: g not on curve", name)
 		}
 	}
 }

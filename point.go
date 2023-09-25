@@ -39,7 +39,13 @@ func (p *Point) OnCurve() bool {
 }
 
 func (p *Point) Equals(q *Point) bool {
-	// TODO Should verify the curves are the same
+	if p == q {
+		return true
+	}
+
+	if !p.Curve.Equals(q.Curve) {
+		return false
+	}
 
 	if p.AtInf && q.AtInf {
 		return true
@@ -53,7 +59,9 @@ func (p *Point) Equals(q *Point) bool {
 }
 
 func (p *Point) IsNegation(q *Point) bool {
-	// TODO Should verify the curves are the same
+	if !p.Curve.Equals(q.Curve) {
+		panic(errors.New("points not on same curve"))
+	}
 
 	return p.X.Cmp(q.X) == 0 && p.Y.Cmp(new(big.Int).Neg(q.Y)) == 0
 }
@@ -64,11 +72,23 @@ func (p *Point) Negate() *Point {
 		return &Point{AtInf: true, Curve: p.Curve}
 	}
 
-	return &Point{X: new(big.Int).Set(p.X), Y: new(big.Int).Set(p.Y), Curve: p.Curve}
+	q := &Point{
+		X: new(big.Int).Set(p.X),
+		Y: new(big.Int).Neg(p.Y),
+		Curve: p.Curve,
+	}
+
+	if !q.OnCurve() {
+		panic(errors.New("negated point not on curve"))
+	}
+
+	return q
 }
 
 func (p *Point) Add(q *Point) *Point {
-	// TODO Should verify the curves are the same
+	if !p.Curve.Equals(q.Curve) {
+		panic(errors.New("points not on same curve"))
+	}
 
 	if p.AtInf && q.AtInf {
 		return &Point{AtInf: true, Curve: p.Curve}
@@ -78,7 +98,7 @@ func (p *Point) Add(q *Point) *Point {
 		return &Point{X: new(big.Int).Set(p.X), Y: new(big.Int).Set(p.Y), Curve: p.Curve}
 	}
 
-	// FIXME Call Double
+	// FIXME STOPPED Call Double, add test for this
 	//if p.Equals(q) {
 	//}
 
@@ -91,10 +111,30 @@ func (p *Point) Add(q *Point) *Point {
 		panic(errors.New("points with same x but not negations"))
 	}
 
-	// FIXME STOPPED Write explicit steps in the README.md (involves modinv)
-	//               Verify new point OnCurve
-	//               Also write some tests around this
-	return &Point{Curve: p.Curve}
+	lambda := new(big.Int)
+	lambda.Sub(q.X, p.X)
+	lambda.ModInverse(lambda, p.Curve.P)
+	lambda.Mul(lambda, new(big.Int).Sub(q.Y, p.Y))
+	lambda.Mod(lambda, p.Curve.P)
+
+	x := new(big.Int)
+	x.Exp(lambda, big.NewInt(2), p.Curve.P)
+	x.Sub(x, p.X)
+	x.Sub(x, q.X)
+	x.Mod(x, p.Curve.P)
+
+	y := new(big.Int)
+	y.Mul(lambda, new(big.Int).Sub(p.X, x))
+	y.Sub(y, p.Y)
+	y.Mod(y, p.Curve.P)
+
+	r := &Point{X: x, Y: y, Curve: p.Curve}
+
+	if !r.OnCurve() {
+		panic(errors.New("added point not on curve"))
+	}
+
+	return r
 }
 
 // FIXME Implement Double, Mul/Multiply
