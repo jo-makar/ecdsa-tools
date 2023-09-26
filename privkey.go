@@ -10,8 +10,8 @@ import (
 )
 
 type PrivKey struct {
-	Curve *Curve
 	D     *big.Int // Private key
+	Curve *Curve
 }
 
 func NewPrivKeyOpenSSL(curve string) (*PrivKey, error) {
@@ -73,24 +73,31 @@ func NewPrivKeyOpenSSL(curve string) (*PrivKey, error) {
 		return nil, err
 	}
 
-	d := new(big.Int)
-	if _, ok := d.SetString(hexPrivKey, 16); !ok {
+	privkey := new(big.Int)
+	if _, ok := privkey.SetString(hexPrivKey, 16); !ok {
 		return nil, errors.New("invalid hex value")
 	}
 
-	pubkey := new(big.Int)
-	if _, ok := pubkey.SetString(hexPubKey, 16); !ok {
+	if len(hexPubKey) != 130 || hexPubKey[0:2] != "04" {
+		return nil, errors.New("unexpected pubkey format")
+	}
+
+	c := curves[curve]
+	pubkey := &Point{X: new(big.Int), Y: new(big.Int), Curve: c}
+	if _, ok := pubkey.X.SetString(hexPubKey[2:2+64], 16); !ok {
+		return nil, errors.New("invalid hex value")
+	}
+	if _, ok := pubkey.Y.SetString(hexPubKey[2+64:2+64+64], 16); !ok {
 		return nil, errors.New("invalid hex value")
 	}
 
 	// Verify pubkey = privkey * G
-	// FIXME STOPPED
-	fmt.Printf("0x%s\n", d.Text(16))
-	fmt.Printf("0x%s\n", pubkey.Text(16))
+	g := &Point{X: c.Gx, Y: c.Gy, Curve: c}
+	if !pubkey.Equals(g.Multiply(privkey)) {
+		return nil, errors.New("pubkey privkey mismatch")
+	}
 
-	return nil, nil
-
-	// FIXME Include a function to derive the PubKey from the PrivKey instance
+	return &PrivKey{D: privkey, Curve: c}, nil
 }
 
 func NewPrivKeyStdLib(curve string) (*PrivKey, error) {
@@ -98,16 +105,21 @@ func NewPrivKeyStdLib(curve string) (*PrivKey, error) {
 		return nil, fmt.Errorf("unsupported curve: %s", curve)
 	}
 
-	// FIXME STOPPED
+	// FIXME Implement
 	return nil, nil
 }
 
 func NewPrivKeyBitcoin() (*PrivKey, error) {
-	// FIXME STOPPED
+	// FIXME Implement
 	return nil, nil
 }
 
 func NewPrivKeyEthereum() (*PrivKey, error) {
-	// FIXME STOPPED
+	// FIXME Implement
 	return nil, nil
+}
+
+func (p *PrivKey) CalcPubKey() *PubKey {
+	g := &Point{X: p.Curve.Gx, Y: p.Curve.Gy, Curve: p.Curve}
+	return &PubKey{E: g.Multiply(p.D), Curve: p.Curve}
 }

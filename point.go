@@ -228,7 +228,7 @@ func (p *Point) Multiply(k *big.Int) *Point {
 			q = q.Add(cache[j.String()])
 			i.Add(i, j)
 
-			// Break here to check for largest factor each iteration
+			// Check for the largest factor each iteration
 			break
 		}
 

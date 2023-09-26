@@ -100,8 +100,8 @@ func (p *Point) Negate() *Point
 func (p *Point) OnCurve() bool
 
 type PrivKey struct {
-	Curve *Curve
 	D     *big.Int // Private key
+	Curve *Curve
 }
 
 func NewPrivKeyBitcoin() (*PrivKey, error)
@@ -111,6 +111,17 @@ func NewPrivKeyEthereum() (*PrivKey, error)
 func NewPrivKeyOpenSSL(curve string) (*PrivKey, error)
 
 func NewPrivKeyStdLib(curve string) (*PrivKey, error)
+
+func NewPubKeyBitcoin(address string) (*PrivKey, error)
+
+func NewPubKeyEthereum(address string) (*PrivKey, error)
+
+func (p *PrivKey) CalcPubKey() *PubKey
+
+type PubKey struct {
+	E     *Point // Public key
+	Curve *Curve
+}
 
 ```
 <!-- go doc end -->
