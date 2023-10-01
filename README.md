@@ -13,9 +13,14 @@ Domain parameters
 - p is the (prime) congruence modulo above, ie lhs % p = rhs % p
 - n is the number of possible points on the curve, note that n < p
 
+Note that n * G = O (point at infinity)  
+This implies that n * pubkey = O  
+Because n * (privkey * G) = O
+
 ### Elliptic curve arithmetic
 
-Ref: <https://en.wikipedia.org/wiki/Elliptic_curve_point_multiplication>
+- <https://en.wikipedia.org/wiki/Elliptic_curve_point_multiplication>
+- <https://en.wikipedia.org/wiki/Elliptic_Curve_Digital_Signature_Algorithm>
 
 #### Point at infinity
 
@@ -59,6 +64,17 @@ If P is added to P the result is 2P, similarly 2P + P is 3P
 Given R = kP where R and P are known, k cannot be determined  
 This is the basis for ECDSA use in public-key cryptography  
 Ie pubkey = privkey * G
+
+#### Signature generation
+
+FIXME Writeup
+
+#### Signature verification
+
+- Check that the pubkey lies on the curve
+- Check that n * pubkey = O (point at infinity)
+
+FIXME STOPPED Further writeup from https://en.wikipedia.org/wiki/Elliptic_Curve_Digital_Signature_Algorithm
 
 ## Documentation
 
@@ -104,17 +120,19 @@ type PrivKey struct {
 	Curve *Curve
 }
 
-func NewPrivKeyBitcoin() (*PrivKey, error)
+func NewPrivKeyBitcoin(privKey string) (*PrivKey, error)
 
-func NewPrivKeyEthereum() (*PrivKey, error)
+func NewPrivKeyEthereum(privKey string) (*PrivKey, error)
 
-func NewPrivKeyOpenSSL(curve string) (*PrivKey, error)
+func NewPrivKeyViaOpenSSLFile(privKeyPath string) (*PrivKey, error)
 
-func NewPrivKeyStdLib(curve string) (*PrivKey, error)
+func NewRandomPrivKeyBitcoin() (*PrivKey, error)
 
-func NewPubKeyBitcoin(address string) (*PrivKey, error)
+func NewRandomPrivKeyEthereum() (*PrivKey, error)
 
-func NewPubKeyEthereum(address string) (*PrivKey, error)
+func NewRandomPrivKeyViaOpenSSL(curve string) (*PrivKey, error)
+
+func NewRandomPrivKeyViaStdLib(curve string) (*PrivKey, error)
 
 func (p *PrivKey) CalcPubKey() *PubKey
 
@@ -123,9 +141,19 @@ type PubKey struct {
 	Curve *Curve
 }
 
+func NewPubKeyBitcoin(address string) (*PubKey, error)
+
+func NewPubKeyEthereum(address string) (*PubKey, error)
+
+func NewPubKeyViaOpenSSLFile(pubKeyPath string) (*PubKey, error)
+
 ```
 <!-- go doc end -->
 
-## cmd/demo/
+## cmd/verify-demo/
 
-Signature signing demo
+OpenSSL signature verification demo
+
+## cmd/sign-demo/
+
+OpenSSL signature (generation) demo

@@ -64,7 +64,19 @@ func (p *Point) IsNegation(q *Point) bool {
 		panic(errors.New("points not on same curve"))
 	}
 
-	return p.X.Cmp(q.X) == 0 && p.Y.Cmp(new(big.Int).Neg(q.Y)) == 0
+	if p.X.Cmp(q.X) != 0 {
+		return false
+	}
+
+	signs := p.Y.Sign() + q.Y.Sign()
+	if signs == -2 || signs == 2 {
+		// Both signs are the same
+		rY := new(big.Int).Neg(p.Y)
+		rY.Add(rY, p.Curve.P)
+		return q.Y.Cmp(rY) == 0
+	} else {
+		return p.Y.Cmp(new(big.Int).Neg(q.Y)) == 0
+	}
 }
 
 func (p *Point) Negate() *Point {

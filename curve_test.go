@@ -34,5 +34,11 @@ func TestCurves(t *testing.T) {
 		if !g.OnCurve() {
 			t.Errorf("%s: g not on curve", name)
 		}
+
+		// Verify n * G = O (point at infinity)
+		o := g.Multiply(curve.N)
+		if !o.AtInf {
+			t.Errorf("%s: n * g != o", name)
+		}
 	}
 }
