@@ -41,6 +41,10 @@ func main() {
 		}
 	}
 
+	//
+	// Signature generation
+	//
+
 	execStdout := func(name string, args ...string) ([]byte, error) {
 		cmd := exec.Command(name, args...)
 
@@ -58,8 +62,10 @@ func main() {
 		panic(err)
 	}
 
-	// Signature ASN.1 parsing
+	//
+	// Signature ASN.1 unmarshalling
 	// ... | openssl asn1parse -inform der
+	//
 
 	var signature []*big.Int
 	if rest, err := asn1.Unmarshal(encodedSignature, &signature); err != nil {
@@ -73,21 +79,27 @@ func main() {
 
 	r, s := signature[0], signature[1]
 
-	fileBytes, err := os.ReadFile(FILE_PATH)
-	if err != nil {
-		panic(err)
-	}
+	//
+	// Signature verification
+	//
+
+	n := pubkey.Curve.N
 
 	h := new(big.Int)
 	{
+		fileBytes, err := os.ReadFile(FILE_PATH)
+		if err != nil {
+			panic(err)
+		}
+
 		fileHash := sha256.Sum256(fileBytes)
 		h.SetBytes(fileHash[:])
-		h.Mod(h, pubkey.Curve.N)
+
+		l := n.BitLen()
+		if sha256.Size*8 > l {
+			h.Rsh(h, uint(sha256.Size*8-l))
+		}
 	}
-
-	// Signature verification
-
-	n := pubkey.Curve.N
 
 	if pubkey.E.AtInf {
 		panic(errors.New("pubkey is point at infinity"))
@@ -108,11 +120,6 @@ func main() {
 		}
 	}
 
-	l := n.BitLen()
-	if sha256.Size*8 > l {
-		h.Rsh(h, uint(sha256.Size*8-l))
-	}
-
 	w := new(big.Int).ModInverse(s, n)
 	u := new(big.Int).Mul(h, w)
 	u.Mod(u, n)
@@ -126,7 +133,7 @@ func main() {
 			panic(errors.New("result is point at infinity"))
 		}
 
-		x := p.X.Mod(p.X, n)
+		x := new(big.Int).Mod(p.X, n)
 		if x.Sign() == -1 {
 			x.Neg(x)
 			x.Mod(x, n)

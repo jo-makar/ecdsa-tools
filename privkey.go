@@ -134,7 +134,7 @@ func NewRandomPrivKeyViaStdLib(curve string) (*PrivKey, error) {
 		return nil, fmt.Errorf("unsupported curve: %s", curve)
 	}
 
-	// FIXME Implement
+	// TODO Implement crypto/ecdsa.GenerateKey
 	return nil, nil
 }
 
