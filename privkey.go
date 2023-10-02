@@ -139,22 +139,22 @@ func NewRandomPrivKeyViaStdLib(curve string) (*PrivKey, error) {
 }
 
 func NewRandomPrivKeyBitcoin() (*PrivKey, error) {
-	// FIXME Implement
+	// TODO Implement
 	return nil, nil
 }
 
 func NewPrivKeyBitcoin(privKey string) (*PrivKey, error) {
-	// FIXME Implement
+	// TODO Implement
 	return nil, nil
 }
 
 func NewRandomPrivKeyEthereum() (*PrivKey, error) {
-	// FIXME Implement
+	// TODO Implement
 	return nil, nil
 }
 
 func NewPrivKeyEthereum(privKey string) (*PrivKey, error) {
-	// FIXME Implement
+	// TODO Implement
 	return nil, nil
 }
 

@@ -22,6 +22,10 @@ Because n * (privkey * G) = O
 - <https://en.wikipedia.org/wiki/Elliptic_curve_point_multiplication>
 - <https://en.wikipedia.org/wiki/Elliptic_Curve_Digital_Signature_Algorithm>
 
+#### Negative values
+
+a = -a % n
+
 #### Point at infinity
 
 The identity element, adding it to any point results in that point  
@@ -67,14 +71,30 @@ Ie pubkey = privkey * G
 
 #### Signature generation
 
-FIXME Writeup
+- Let L be the bit length of n
+- Let z be the leftmost L bits of hash(message)
+- Select a random integer k in the range [1, n - 1]
+- Calculate (x, y) = k * G
+- Calculte r = x % n
+  - If r = 0 then choose a different k
+- Calculate s = (k^-1 * (z + r * privkey)) % n = (modinv(k, n) * (z + r * privkey)) % n
+  - If s = 0 then choose a different k
+- The signature is (r, s)
+  - If r or s is negative make positive with a = -a % n
 
 #### Signature verification
 
-- Check that the pubkey lies on the curve
-- Check that n * pubkey = O (point at infinity)
-
-FIXME STOPPED Further writeup from https://en.wikipedia.org/wiki/Elliptic_Curve_Digital_Signature_Algorithm
+- Verify the pubkey != O (point at infinity)
+- Verify the pubkey lies on the curve
+- Verify n * pubkey = O
+- Verify r and s are in the range [1, n - 1]
+- Let L be the bit length of n
+- Let z be the leftmost L bits of hash(message)
+- Calculate u = (z * s^-1) % n = (z * modinv(s, n)) % n
+- Calculate v = (r * s^-1) % n = (r * modinv(s, n)) % n
+- Calculate (x, y) = u * G + v * pubkey
+  - If the point (x, y) = O then the signature is invalid
+- Verify r = x % n
 
 ## Documentation
 

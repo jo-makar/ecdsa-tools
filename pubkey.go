@@ -55,11 +55,11 @@ func NewPubKeyViaOpenSSLFile(pubKeyPath string) (*PubKey, error) {
 }
 
 func NewPubKeyBitcoin(address string) (*PubKey, error) {
-	// FIXME Implement
+	// TODO Implement
 	return nil, nil
 }
 
 func NewPubKeyEthereum(address string) (*PubKey, error) {
-	// FIXME Implement
+	// TODO Implement
 	return nil, nil
 }
