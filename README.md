@@ -195,3 +195,7 @@ OpenSSL signature verification demo
 ## cmd/sign-demo/
 
 OpenSSL signature (generation) demo
+
+## cmd/bitcoin-demo/
+
+Bitcoin private key to address demo
