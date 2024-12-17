@@ -202,7 +202,7 @@ func (p *Point) Multiply(k *big.Int) *Point {
 	}
 
 	cache := map[string]*Point{
-		big.NewInt(1).String(): &Point{
+		big.NewInt(1).String(): {
 			X:     new(big.Int).Set(p.X),
 			Y:     new(big.Int).Set(p.Y),
 			Curve: p.Curve,

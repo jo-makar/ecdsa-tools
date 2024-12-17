@@ -1,6 +1,7 @@
 package ecdsa_tools
 
 import (
+	"crypto/rand"
 	"errors"
 	"fmt"
 	"math/big"
@@ -134,28 +135,66 @@ func NewRandomPrivKeyViaStdLib(curve string) (*PrivKey, error) {
 		return nil, fmt.Errorf("unsupported curve: %s", curve)
 	}
 
-	// TODO Implement crypto/ecdsa.GenerateKey
-	return nil, nil
+	return nil, errors.New("TODO implement using crypto/ecdsa.GenerateKey")
 }
 
 func NewRandomPrivKeyBitcoin() (*PrivKey, error) {
-	// TODO Implement
-	return nil, nil
+	curve := curves["secp256k1"]
+
+	d, err := rand.Int(rand.Reader, curve.N)
+	if err != nil {
+		return nil, err
+	}
+
+	// rand.Int returns [0, N) so the first check may occur
+	if big.NewInt(1).Cmp(d) == 1 { // 1 > d
+		return nil, errors.New("invalid privkey value")
+	}
+	if d.Cmp(curve.N) >= 0 { // d >= curve.N
+		return nil, errors.New("invalid privkey value")
+	}
+
+	privkey := PrivKey{D: d, Curve: curve}
+
+	pubkey := privkey.CalcPubKey()
+	if !pubkey.E.OnCurve() {
+		return nil, errors.New("pubkey not on curve")
+	}
+
+	return &privkey, nil
 }
 
 func NewPrivKeyBitcoin(privKey string) (*PrivKey, error) {
-	// TODO Implement
-	return nil, nil
+	curve := curves["secp256k1"]
+
+	d := new(big.Int)
+	if _, ok := d.SetString(privKey, 16); !ok {
+		return nil, errors.New("invalid hex value")
+	}
+
+	if big.NewInt(1).Cmp(d) == 1 { // 1 > d
+		return nil, errors.New("invalid privkey value")
+	}
+	if d.Cmp(curve.N) >= 0 { // d >= curve.N
+		return nil, errors.New("invalid privkey value")
+	}
+
+	privkey := PrivKey{D: d, Curve: curve}
+
+	pubkey := privkey.CalcPubKey()
+	if !pubkey.E.OnCurve() {
+		return nil, errors.New("pubkey not on curve")
+	}
+
+	return &privkey, nil
 }
 
 func NewRandomPrivKeyEthereum() (*PrivKey, error) {
-	// TODO Implement
-	return nil, nil
+	return nil, errors.New("TODO implement")
 }
 
 func NewPrivKeyEthereum(privKey string) (*PrivKey, error) {
-	// TODO Implement
-	return nil, nil
+	return nil, errors.New("TODO implement")
 }
 
 func (p *PrivKey) CalcPubKey() *PubKey {

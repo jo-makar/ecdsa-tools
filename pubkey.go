@@ -54,12 +54,6 @@ func NewPubKeyViaOpenSSLFile(pubKeyPath string) (*PubKey, error) {
 	return &PubKey{E: pubkey, Curve: c}, nil
 }
 
-func NewPubKeyBitcoin(address string) (*PubKey, error) {
-	// TODO Implement
-	return nil, nil
-}
-
 func NewPubKeyEthereum(address string) (*PubKey, error) {
-	// TODO Implement
-	return nil, nil
+	return nil, errors.New("TODO implement")
 }

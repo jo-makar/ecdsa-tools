@@ -7,6 +7,9 @@ Elliptic Curve Digital Signature Algorithm tools
 Elliptic curves are defined as (y^2) % p = (x^3 + ax + b) % p  
 For which (4a^3 + 27b^2) % p != 0 (to exclude singular curves)
 
+These curves are symmetric about the x-axis  
+A straight line can intersect the curve at a maximum of three points
+
 Domain parameters
 - a and b are the equation constants above
 - G is the generator point, a point on the curve above
@@ -95,6 +98,23 @@ Ie pubkey = privkey * G
 - Calculate (x, y) = u * G + v * pubkey
   - If the point (x, y) = O then the signature is invalid
 - Verify r = x % n
+
+### Bitcoin addresses
+
+A Bitcoin address is created by hashing a public key
+
+### Ethereum signatures
+
+- <https://ethereum.github.io/yellowpaper/paper.pdf>, Appendix F: Signing Transactions
+- <https://eklitzke.org/bitcoin-transaction-malleability>
+  - Bitcoin and Ethereum use the same Elliptic curve (secp256k1)
+
+A signature is invalid unless:
+- 0 &lt; r &lt; n
+- 0 &lt; s &lt; (n >> 1) + 1
+  - Restricted to the lower half to prevent transaction malleability
+- v == 0 or 1 (often shifted to 27 or 28)
+  - The lower (higher) value represents an even (odd) y
 
 ## Documentation
 
