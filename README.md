@@ -181,8 +181,6 @@ type PubKey struct {
 	Curve *Curve
 }
 
-func NewPubKeyBitcoin(address string) (*PubKey, error)
-
 func NewPubKeyEthereum(address string) (*PubKey, error)
 
 func NewPubKeyViaOpenSSLFile(pubKeyPath string) (*PubKey, error)
