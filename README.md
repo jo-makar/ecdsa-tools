@@ -4,7 +4,8 @@ Elliptic Curve Digital Signature Algorithm tools
 
 ## Notes
 
-Elliptic curves are defined as (y^2) % p = (x^3 + ax + b) % p  
+Elliptic curves are defined as $y^2 = x^3 + ax + b (mod m)$
+Elliptic curves are defined as (y^2) % p = (x^3 + ax + b) % p j
 For which (4a^3 + 27b^2) % p != 0 (to exclude singular curves)
 
 These curves are symmetric about the x-axis  
