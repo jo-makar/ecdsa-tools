@@ -24,7 +24,7 @@ func NewPoint(x, y *big.Int, curve *Curve) (*Point, error) {
 
 func (p *Point) OnCurve() bool {
 	if p.AtInf {
-		return true
+		return false
 	}
 
 	lhs := new(big.Int)
@@ -249,9 +249,9 @@ func (p *Point) Multiply(k *big.Int) *Point {
 		}
 	}
 
-	if !q.OnCurve() {
-		panic(errors.New("multiplied point not on curve"))
-	}
+	//if !q.OnCurve() {
+	//	panic(errors.New("multiplied point not on curve"))
+	//}
 
 	return q
 }

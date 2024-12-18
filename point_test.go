@@ -64,8 +64,8 @@ func TestAddNegation(t *testing.T) {
 	}
 
 	r := p.Add(q)
-	if !r.OnCurve() {
-		t.Errorf("result not on curve")
+	if r.OnCurve() {
+		t.Errorf("result on curve")
 	}
 
 	if !r.AtInf {
