@@ -3,7 +3,7 @@
 Elliptic Curve Digital Signature Algorithm tools
 
 Elliptic curves are defined as $y^2 \equiv x^3 + ax + b \pmod p$.  
-For which $(4a^3 + 27b^2) \\% p \neq 0$ (to exclude singular curves).
+For which $(4a^3 + 27b^2) \bmod p \neq 0$ (to exclude singular curves).
 
 <!-- FIXME STOPPED -->
 These curves are symmetric about the x-axis  
