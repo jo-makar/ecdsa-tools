@@ -2,10 +2,10 @@
 
 Elliptic Curve Digital Signature Algorithm tools
 
-Elliptic curves are defined as $y^2 \equiv x^3 + ax + b \pmod p$.  
+Elliptic curves are defined as $y^2 \equiv x^3 + ax + b \pmod p$.
 For which $(4a^3 + 27b^2) \bmod p \neq 0$ (to exclude singular curves).
 
-These curves are symmetric about the x-axis.  
+These curves are symmetric about the x-axis.
 A straight line can intersect the curve at a maximum of three points.
 
 Domain parameters
@@ -14,7 +14,7 @@ Domain parameters
 - $p$ is the (prime) congruence modulo above, ie $lhs \bmod p = rhs \bmod p$
 - $n$ is the number of possible points on the curve, note that $n < p$
 
-Note that $n * G = O$ (point at infinity).  
+Note that $n * G = O$ (point at infinity).
 This implies that $n * pubkey = O$ because $n * (privkey * G) = O$.
 
 ## Arithmetic
@@ -25,16 +25,16 @@ References
 
 ### Point at infinity
 The point at infinity is a special point that does not lie on the curve,
-resulting from adding two points whose sum is not on the curve.  
+resulting from adding two points whose sum is not on the curve.
 In addition it acts as an identity element, adding it to any point results in itself.
 
 ### Point negation
-Adding a point and its negation results in the point at infinity.  
+Adding a point and its negation results in the point at infinity.
 Negated points have the same x coordinate and negated y coordinate.
 
 ### Point addition
 
-Adding (the x, y components of) one point $P$ to another point $Q$ results in a point $S$.  
+Adding (the x, y components of) one point $P$ to another point $Q$ results in a point $S$.
 If a line is drawn from $P$ to $Q$ it will result in a point $R$ where $R = -S$.
 
 $P + Q = R$  
@@ -46,7 +46,7 @@ Modular inverse: Find $b$ such that $(a * b) \bmod m = 1$
 $\lambda = ((yq - yp) * modinv(xq - xp, p)) \bmod p$
 
 $xr = (\lambda^2 - xp - xq) \bmod p$  
-$yr = (\lambda * (xp - xr) - yp) \bmod p%
+$yr = (\lambda * (xp - xr) - yp) \bmod p$
 
 ### Point doubling
 Same as point addition but with  
@@ -63,7 +63,7 @@ $(-n)P = (-P) + (-P) + (-P) ... + (-P)$
 If $n$ is zero then $nP$ is the point at infinity.
 
 ### Trap door function
-Given $R = kP$ where $R$ and $P$ are known, $k$ cannot be determined.  
+Given $R = kP$ where $R$ and $P$ are known, $k$ cannot be determined.
 This is the basis for ECDSA use in public-key cryptography, ie $pubkey = privkey * G$.
 
 <!-- FIXME STOPPED -->
