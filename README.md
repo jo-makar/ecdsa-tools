@@ -103,7 +103,7 @@ References
 
 A signature is invalid unless:
 - $0 < r < n$
-- $0 < s < (n \texttt{>>} 1) + 1$
+- $0 < s < (n >> 1) + 1$
   - Restricted to the lower half to prevent transaction malleability
 - $v$ is zero or one (often shifted to 27 or 28)
   - The lower (higher) value represents an even (odd) $y$
