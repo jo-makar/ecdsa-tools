@@ -66,50 +66,47 @@ If $n$ is zero then $nP$ is the point at infinity.
 Given $R = kP$ where $R$ and $P$ are known, $k$ cannot be determined.
 This is the basis for ECDSA use in public-key cryptography, ie $pubkey = privkey * G$.
 
-<!-- FIXME STOPPED -->
-#### Signature generation
+### Signature generation
+- Let $L$ be the bit length of $n$
+- Let $z$ be the leftmost $L$ bits of $hash(message)$
+- Select a random integer $k$ in the range $[1, n-1]$
+- Calculate $(x, y) = k * G$
+- Calculte $r = x \bmod n$
+  - If $r = 0$ then choose a different $k$
+- Calculate $s = (k^-1 * (z + r * privkey)) \bmod n = (modinv(k, n) * (z + r * privkey)) \bmod n$
+  - If $s = 0$ then choose a different $k$
+- The signature is $(r, s)$
+  - If $r$ or $s$ is negative make positive with %a = -a \bmod n%
 
-- Let L be the bit length of n
-- Let z be the leftmost L bits of hash(message)
-- Select a random integer k in the range [1, n - 1]
-- Calculate (x, y) = k * G
-- Calculte r = x % n
-  - If r = 0 then choose a different k
-- Calculate s = (k^-1 * (z + r * privkey)) % n = (modinv(k, n) * (z + r * privkey)) % n
-  - If s = 0 then choose a different k
-- The signature is (r, s)
-  - If r or s is negative make positive with a = -a % n
-
-#### Signature verification
-
-- Verify the pubkey != O (point at infinity)
-- Verify the pubkey lies on the curve
-- Verify n * pubkey = O
-- Verify r and s are in the range [1, n - 1]
-- Let L be the bit length of n
-- Let z be the leftmost L bits of hash(message)
-- Calculate u = (z * s^-1) % n = (z * modinv(s, n)) % n
-- Calculate v = (r * s^-1) % n = (r * modinv(s, n)) % n
-- Calculate (x, y) = u * G + v * pubkey
-  - If the point (x, y) = O then the signature is invalid
-- Verify r = x % n
+### Signature verification
+- Verify the $pubkey \neq O$ (point at infinity)
+- Verify the $pubkey$ lies on the curve
+- Verify $n * pubkey = O$
+- Verify $r$ and $s$ are in the range $[1, n-1]$
+- Let $L$ be the bit length of $n$
+- Let $z$ be the leftmost $L$ bits of $hash(message)$
+- Calculate $u = (z * s^-1) \bmod n = (z * modinv(s, n)) \bmod n$
+- Calculate $v = (r * s^-1) \bmod n = (r * modinv(s, n)) \bmod n$
+- Calculate $(x, y) = uG + v * pubkey$
+  - If the point $(x, y) = O$ then the signature is invalid
+- Verify $r = x \bmod n$
 
 ### Bitcoin addresses
-
 A Bitcoin address is created by hashing a public key
 
 ### Ethereum signatures
 
+References
 - <https://ethereum.github.io/yellowpaper/paper.pdf>, Appendix F: Signing Transactions
 - <https://eklitzke.org/bitcoin-transaction-malleability>
   - Bitcoin and Ethereum use the same Elliptic curve (secp256k1)
 
 A signature is invalid unless:
-- 0 &lt; r &lt; n
-- 0 &lt; s &lt; (n >> 1) + 1
+- $0 < r < n$
+- $0 < s < (n >> 1) + 1$
   - Restricted to the lower half to prevent transaction malleability
-- v == 0 or 1 (often shifted to 27 or 28)
-  - The lower (higher) value represents an even (odd) y
+- $v$ is zero or one (often shifted to 27 or 28)
+  - The lower (higher) value represents an even (odd) $y$
 
 ## Documentation
 
@@ -184,13 +181,10 @@ func NewPubKeyViaOpenSSLFile(pubKeyPath string) (*PubKey, error)
 <!-- go doc end -->
 
 ## cmd/verify-demo/
-
 OpenSSL signature verification demo
 
 ## cmd/sign-demo/
-
 OpenSSL signature (generation) demo
 
 ## cmd/bitcoin-demo/
-
 Bitcoin private key to address demo
