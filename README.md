@@ -2,11 +2,10 @@
 
 Elliptic Curve Digital Signature Algorithm tools
 
-## Notes
+Elliptic curves are defined as $y^2 \equiv x^3 + ax + b \pmod p$.  
+For which $(4a^3 + 27b^2) % p \neq 0$ (to exclude singular curves).
 
-Elliptic curves are defined as (y^2) % p = (x^3 + ax + b) % p  
-For which (4a^3 + 27b^2) % p != 0 (to exclude singular curves)
-
+<!-- FIXME STOPPED -->
 These curves are symmetric about the x-axis  
 A straight line can intersect the curve at a maximum of three points
 
