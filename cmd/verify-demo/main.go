@@ -107,8 +107,25 @@ func main() {
 	if !pubkey.E.OnCurve() {
 		panic(errors.New("pubkey not on curve"))
 	}
-	if !pubkey.E.Multiply(n).AtInf {
-		panic(errors.New("n * pubkey != point at infinity"))
+
+	multiplyEByN := func(e *ecdsa.Point, n *big.Int) (err error) {
+		defer func() {
+			if r := recover(); r != nil {
+				if e, ok := r.(error); ok {
+					err = e
+				}
+			}
+		}()
+
+		e.Multiply(n)
+		return
+	}
+	if err := multiplyEByN(pubkey.E, n); err != nil {
+		if errMsg := err.Error(); errMsg != "multiplied point not on curve" {
+			panic(fmt.Errorf("n * e ?= o: %s", errMsg))
+		}
+	} else {
+		panic("n * e != o")
 	}
 
 	for _, v := range []*big.Int{r, s} {
