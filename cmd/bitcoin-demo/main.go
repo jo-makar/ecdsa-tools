@@ -3,7 +3,7 @@ package main
 import (
 	ecdsa "github.com/jo-makar/ecdsa-tools"
 
-	"golang.org/x/crypto/ripemd160"
+	"golang.org/x/crypto/ripemd160" // nolint
 
 	"crypto/sha256"
 	"encoding/hex"

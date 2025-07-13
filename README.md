@@ -110,75 +110,7 @@ A signature is invalid unless:
 
 ## Documentation
 
-<!-- go doc start -->
-```
-package ecdsa_tools // import "github.com/jo-makar/ecdsa-tools"
-
-
-TYPES
-
-type Curve struct {
-	P, A, B *big.Int // Elliptic curve definition: (y^2) % p = (x^3 + ax + b) % p
-	Gx, Gy  *big.Int // Generator point (a point on the curve above)
-	N       *big.Int // Number of possible points on the curve
-}
-
-func (c *Curve) Equals(d *Curve) bool
-
-type Point struct {
-	X, Y  *big.Int
-	AtInf bool
-	Curve *Curve
-}
-
-func NewPoint(x, y *big.Int, curve *Curve) (*Point, error)
-
-func (p *Point) Add(q *Point) *Point
-
-func (p *Point) Double() *Point
-
-func (p *Point) Equals(q *Point) bool
-
-func (p *Point) IsNegation(q *Point) bool
-
-func (p *Point) Multiply(k *big.Int) *Point
-
-func (p *Point) Negate() *Point
-
-func (p *Point) OnCurve() bool
-
-type PrivKey struct {
-	D     *big.Int // Private key
-	Curve *Curve
-}
-
-func NewPrivKeyBitcoin(privKey string) (*PrivKey, error)
-
-func NewPrivKeyEthereum(privKey string) (*PrivKey, error)
-
-func NewPrivKeyViaOpenSSLFile(privKeyPath string) (*PrivKey, error)
-
-func NewRandomPrivKeyBitcoin() (*PrivKey, error)
-
-func NewRandomPrivKeyEthereum() (*PrivKey, error)
-
-func NewRandomPrivKeyViaOpenSSL(curve string) (*PrivKey, error)
-
-func NewRandomPrivKeyViaStdLib(curve string) (*PrivKey, error)
-
-func (p *PrivKey) CalcPubKey() *PubKey
-
-type PubKey struct {
-	E     *Point // Public key
-	Curve *Curve
-}
-
-func NewPubKeyEthereum(address string) (*PubKey, error)
-
-func NewPubKeyViaOpenSSLFile(pubKeyPath string) (*PubKey, error)
-
-```
-<!-- go doc end -->
+<https://pkg.go.dev/github.com/jo-makar/ecdsa-tools>
 
 ## cmd/verify-demo/
 OpenSSL signature verification demo

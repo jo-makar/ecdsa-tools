@@ -2,17 +2,6 @@
 
 set -o errexit
 
-awk '
-  BEGIN { state = 0 }
-  state == 0 && /^<!-- go doc start -->$/ { state = 1; print }
-  state == 1 && /^<!-- go doc end -->$/   { state = 0; print "```"; system("go doc -all"); print "```" }
-  state == 0 { print }
-' README.md >README.md.githook
-
-diff -q README.md README.md.githook >/dev/null \
-    && rm -f README.md.githook \
-    || { echo updating api docs in README.md; mv -f README.md.githook README.md; git add README.md; }
-
 gofmt_output=$(gofmt -l .)
 if ! test -z "$gofmt_output"; then
     echo unformatted files: $gofmt_output
@@ -20,7 +9,6 @@ if ! test -z "$gofmt_output"; then
     exit 1
 fi
 
-# TODO Temporarily disabled (golang.org/x/crypto/ripemd160 deprecation warning)
-#golangci-lint run
+golangci-lint run
 
 go test -v ./...
