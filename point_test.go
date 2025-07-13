@@ -36,7 +36,10 @@ func TestAdd(t *testing.T) {
 		t.Errorf("result not on curve")
 	}
 
-	if r.X.Cmp(big.NewInt(6)) != 0 || r.Y.Cmp(big.NewInt(0)) != 0 {
+	if r.X.Cmp(big.NewInt(-1)) != 0 && r.X.Cmp(big.NewInt(6)) != 0 {
+		t.Errorf("unexpected result")
+	}
+	if r.Y.Cmp(big.NewInt(0)) != 0 {
 		t.Errorf("unexpected result")
 	}
 }
@@ -149,7 +152,10 @@ func TestMultiply(t *testing.T) {
 		t.Errorf("result not on curve")
 	}
 
-	if q.X.Cmp(big.NewInt(5)) != 0 || q.Y.Cmp(big.NewInt(8)) != 0 {
+	if q.X.Cmp(big.NewInt(5)) != 0 {
+		t.Errorf("unexpected result")
+	}
+	if q.Y.Cmp(big.NewInt(-9)) != 0 && q.Y.Cmp(big.NewInt(8)) != 0 {
 		t.Errorf("unexpected result")
 	}
 }

@@ -35,6 +35,9 @@ func (p *Point) OnCurve() bool {
 	rhs.Add(rhs, big.NewInt(0).Mul(p.Curve.A, p.X))
 	rhs.Add(rhs, p.Curve.B)
 	rhs.Mod(rhs, p.Curve.P)
+	if rhs.Cmp(big.NewInt(0)) < 0 {
+		rhs.Add(rhs, p.Curve.P)
+	}
 
 	return lhs.Cmp(rhs) == 0
 }
@@ -184,20 +187,14 @@ func (p *Point) Double() *Point {
 	q := &Point{X: x, Y: y, Curve: p.Curve}
 
 	if !q.OnCurve() {
-		panic(errors.New("added point not on curve"))
+		panic(errors.New("doubled point not on curve"))
 	}
 
 	return q
 }
 
 func (p *Point) Multiply(k *big.Int) *Point {
-	if k.Cmp(big.NewInt(0)) != 1 {
-		panic(errors.New("multiply by k<1"))
-	}
-	// TODO What is multiplication by zero, the point at infinity?
-	//      What is multiplcation by a negative number, multipled negation if k is odd?
-
-	if p.AtInf {
+	if p.AtInf || k.Cmp(big.NewInt(0)) == 0 {
 		return &Point{AtInf: true, Curve: p.Curve}
 	}
 
@@ -249,9 +246,9 @@ func (p *Point) Multiply(k *big.Int) *Point {
 		}
 	}
 
-	//if !q.OnCurve() {
-	//	panic(errors.New("multiplied point not on curve"))
-	//}
+	if !q.OnCurve() {
+		panic(errors.New("multiplied point not on curve"))
+	}
 
 	return q
 }

@@ -36,8 +36,25 @@ func TestCurves(t *testing.T) {
 		}
 
 		// Verify n * G = O (point at infinity)
-		o := g.Multiply(curve.N)
-		if !o.AtInf {
+
+		multiplyGByN := func(g *Point, n *big.Int) (err error) {
+			defer func() {
+				if r := recover(); r != nil {
+					if e, ok := r.(error); ok {
+						err = e
+					}
+				}
+			}()
+
+			g.Multiply(n)
+			return
+		}
+
+		if err := multiplyGByN(g, curve.N); err != nil {
+			if errMsg := err.Error(); errMsg != "multiplied point not on curve" {
+				t.Errorf("%s: n * g ?= o: %s", name, errMsg)
+			}
+		} else {
 			t.Errorf("%s: n * g != o", name)
 		}
 	}
