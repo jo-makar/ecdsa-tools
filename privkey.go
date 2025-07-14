@@ -242,3 +242,54 @@ func extractField(lines []string, prefix string) (string, error) {
 	}
 	return "", fmt.Errorf("prefix %s not found", prefix)
 }
+
+func (p *PrivKey) Sign(msg []byte, hashFunc func([]byte) []byte) (*big.Int, *big.Int) {
+	n := p.Curve.N
+	g := &Point{X: p.Curve.Gx, Y: p.Curve.Gy, Curve: p.Curve}
+
+	hash := hashFunc(msg)
+	h := new(big.Int).SetBytes(hash)
+
+	l := n.BitLen()
+	if len(hash)*8 > l {
+		h.Rsh(h, uint(len(hash)*8-l))
+	}
+
+	var r, s *big.Int
+	for {
+		// Generate a random integer k in the range [1, n-1]
+		k, err := rand.Int(rand.Reader, new(big.Int).Sub(n, big.NewInt(1)))
+		if err != nil {
+			panic(err)
+		}
+		k.Add(k, big.NewInt(1))
+
+		q := g.Multiply(k)
+
+		r = new(big.Int).Mod(q.X, n)
+		if r.Cmp(big.NewInt(0)) == 0 {
+			continue
+		}
+		if r.Sign() == -1 {
+			r.Neg(r)
+			r.Mod(r, n)
+		}
+
+		left := new(big.Int).ModInverse(k, n)
+		right := new(big.Int).Mul(r, p.D)
+		right.Add(right, h)
+		s = new(big.Int).Mul(left, right)
+		s.Mod(s, n)
+		if s.Cmp(big.NewInt(0)) == 0 {
+			continue
+		}
+		if s.Sign() == -1 {
+			s.Neg(s)
+			s.Mod(s, n)
+		}
+
+		break
+	}
+
+	return r, s
+}

@@ -76,7 +76,7 @@ This is the basis for ECDSA use in public-key cryptography, ie $pubkey = privkey
 - Calculate $s = (k^-1 * (z + r * privkey)) \bmod n = (modinv(k, n) * (z + r * privkey)) \bmod n$
   - If $s = 0$ then choose a different $k$
 - The signature is $(r, s)$
-  - If $r$ or $s$ is negative make positive with %a = -a \bmod n%
+  - If $r$ or $s$ is negative make it positive with $a = -a \bmod n$
 
 ### Signature verification
 - Verify the $pubkey \neq O$ (point at infinity)
