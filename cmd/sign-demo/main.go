@@ -4,7 +4,6 @@ import (
 	ecdsa "github.com/jo-makar/ecdsa-tools"
 
 	"bytes"
-	"crypto/rand"
 	"crypto/sha256"
 	"encoding/asn1"
 	"errors"
@@ -47,60 +46,18 @@ func main() {
 	// Signature generation
 	//
 
-	n := pubkey.Curve.N
-
-	h := new(big.Int)
-	{
-		fileBytes, err := os.ReadFile(FILE_PATH)
-		if err != nil {
-			panic(err)
-		}
-
-		fileHash := sha256.Sum256(fileBytes)
-		h.SetBytes(fileHash[:])
-
-		l := n.BitLen()
-		if sha256.Size*8 > l {
-			h.Rsh(h, uint(sha256.Size*8-l))
-		}
-	}
-
 	var r, s *big.Int
-	for {
-		k, err := rand.Int(rand.Reader, new(big.Int).Sub(n, big.NewInt(1)))
+	{
+		bytes, err := os.ReadFile(FILE_PATH)
 		if err != nil {
 			panic(err)
 		}
-		k.Add(k, big.NewInt(1))
 
-		g := &ecdsa.Point{X: privkey.Curve.Gx, Y: privkey.Curve.Gy, Curve: privkey.Curve}
-		p := g.Multiply(k)
-
-		r = new(big.Int).Mod(p.X, n)
-		if r.Cmp(big.NewInt(0)) == 0 {
-			fmt.Printf("choosing another k\n")
-			continue
+		hashFunc := func(data []byte) []byte {
+			rv := sha256.Sum256(data)
+			return rv[:]
 		}
-		if r.Sign() == -1 {
-			r.Neg(r)
-			r.Mod(r, n)
-		}
-
-		left := new(big.Int).ModInverse(k, n)
-		right := new(big.Int).Mul(r, privkey.D)
-		right.Add(right, h)
-		s = new(big.Int).Mul(left, right)
-		s.Mod(s, n)
-		if s.Cmp(big.NewInt(0)) == 0 {
-			fmt.Printf("choosing another k\n")
-			continue
-		}
-		if s.Sign() == -1 {
-			s.Neg(s)
-			s.Mod(s, n)
-		}
-
-		break
+		r, s = privkey.Sign(bytes, hashFunc)
 	}
 
 	//

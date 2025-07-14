@@ -83,82 +83,19 @@ func main() {
 	// Signature verification
 	//
 
-	n := pubkey.Curve.N
-
-	h := new(big.Int)
-	{
-		fileBytes, err := os.ReadFile(FILE_PATH)
-		if err != nil {
-			panic(err)
-		}
-
-		fileHash := sha256.Sum256(fileBytes)
-		h.SetBytes(fileHash[:])
-
-		l := n.BitLen()
-		if sha256.Size*8 > l {
-			h.Rsh(h, uint(sha256.Size*8-l))
-		}
+	data, err := os.ReadFile(FILE_PATH)
+	if err != nil {
+		panic(err)
 	}
 
-	if pubkey.E.AtInf {
-		panic(errors.New("pubkey is point at infinity"))
-	}
-	if !pubkey.E.OnCurve() {
-		panic(errors.New("pubkey not on curve"))
+	hashFunc := func(data []byte) []byte {
+		rv := sha256.Sum256(data)
+		return rv[:]
 	}
 
-	multiplyEByN := func(e *ecdsa.Point, n *big.Int) (err error) {
-		defer func() {
-			if r := recover(); r != nil {
-				if e, ok := r.(error); ok {
-					err = e
-				}
-			}
-		}()
-
-		e.Multiply(n)
-		return
-	}
-	if err := multiplyEByN(pubkey.E, n); err != nil {
-		if errMsg := err.Error(); errMsg != "multiplied point not on curve" {
-			panic(fmt.Errorf("n * e ?= o: %s", errMsg))
-		}
+	if pubkey.Verify(r, s, data, hashFunc) {
+		fmt.Printf("valid signature\n")
 	} else {
-		panic("n * e != o")
-	}
-
-	for _, v := range []*big.Int{r, s} {
-		if v.Cmp(big.NewInt(0)) != 1 {
-			panic(errors.New("v <= 0, invalid signature"))
-		}
-		if v.Cmp(n) != -1 {
-			panic(errors.New("v >= n, invalid signature"))
-		}
-	}
-
-	w := new(big.Int).ModInverse(s, n)
-	u := new(big.Int).Mul(h, w)
-	u.Mod(u, n)
-	v := new(big.Int).Mul(r, w)
-	v.Mod(v, n)
-
-	{
-		g := &ecdsa.Point{X: pubkey.Curve.Gx, Y: pubkey.Curve.Gy, Curve: pubkey.Curve}
-		p := g.Multiply(u).Add(pubkey.E.Multiply(v))
-		if p.AtInf {
-			panic(errors.New("result is point at infinity"))
-		}
-
-		x := new(big.Int).Mod(p.X, n)
-		if x.Sign() == -1 {
-			x.Neg(x)
-			x.Mod(x, n)
-		}
-		if r.Cmp(x) != 0 {
-			panic(errors.New("invalid signature"))
-		} else {
-			fmt.Printf("valid signature\n")
-		}
+		panic(errors.New("invalid signature"))
 	}
 }
